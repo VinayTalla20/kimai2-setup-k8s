@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kimai2-https-prod-config
+  namespace: kimai2
+  uid: fb269608-ce6a-4902-b528-156e38c7823e
+  resourceVersion: '1262831'
+  creationTimestamp: '2025-07-30T05:11:53Z'
+  labels:
+    app.kubernetes.io/instance: kimai2-https-prod
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kimai2
+    app.kubernetes.io/version: apache-2.32.0
+    helm.sh/chart: kimai2-4.3.5
+data:
+  local.yaml: |-
+
+
+    kimai:
+      saml:
+        provider: microsoft
+        activate: true
+        title: Login with Azure AD
+        mapping:
+          - { saml: $http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name, kimai: username }
+          - { saml: $http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress, kimai: email }
+          - { saml: $http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname $http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname, kimai: alias }
+        roles:
+          resetOnLogin: true
+          attribute: http://schemas.microsoft.com/ws/2008/06/identity/claims/groups
+          mapping:
+              - { saml: xxxxxxxx-yyyy-xxxx-yyyy-xxxxxxxxxxxx, kimai: ROLE_ADMIN }
+              - { saml: Azure-Group-Object-Id, kimai: ROLE_TEAMLEAD }
+        connection:
+          idp:
+              entityId: 'https://sts.windows.net/%env(TENANT_ID)%/'
+              singleSignOnService:
+                  url: 'https://login.microsoftonline.com/%env(TENANT_ID)%/saml2'
+              x509cert: '%env(SAML_IDP_X509CERT)%'
+          sp:
+              entityId: 'https://%env(DOMAIN)%/auth/saml/metadata'
+              assertionConsumerService:
+                  url: 'https://%env(DOMAIN)%/auth/saml/acs'
+              singleLogoutService:
+                  url: 'https://%env(DOMAIN)%/auth/saml/logout'
+          security:
+              requestedAuthnContext: false
+          baseurl: 'https://%env(DOMAIN)%/auth/saml'
+    monolog:
+        handlers:
+            main:
+                path: php://stderr
