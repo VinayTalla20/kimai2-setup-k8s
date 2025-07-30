@@ -1,19 +1,26 @@
-<VirtualHost *:443>
-    ServerAdmin webmaster@localhost
-    DocumentRoot /opt/kimai/public
-    SSLEngine on
-    SSLCertificateFile      /etc/apache2/ssl/tls.crt
-    SSLCertificateKeyFile   /etc/apache2/ssl/tls.key
-    PassEnv MAILER_FROM
-    PassEnv APP_ENV
-    PassEnv APP_SECRET
-    PassEnv DATABASE_URL
-    PassEnv MAILER_URL
-    PassEnv TRUSTED_PROXIES
-    <Directory "/opt/kimai/public">
-        Require all granted
-        DirectoryIndex index.php
-        AllowOverride All
-    </Directory>
-</VirtualHost>
-ServerName domain.com
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kimai-apache-config
+  namespace: kimai2
+data:
+  000-default.conf: |
+    <VirtualHost *:443>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /opt/kimai/public
+        SSLEngine on
+        SSLCertificateFile      /etc/apache2/ssl/tls.crt
+        SSLCertificateKeyFile   /etc/apache2/ssl/tls.key
+        PassEnv MAILER_FROM
+        PassEnv APP_ENV
+        PassEnv APP_SECRET
+        PassEnv DATABASE_URL
+        PassEnv MAILER_URL
+        PassEnv TRUSTED_PROXIES
+        <Directory "/opt/kimai/public">
+            Require all granted
+            DirectoryIndex index.php
+            AllowOverride All
+        </Directory>
+    </VirtualHost>
+    ServerName domain.com
